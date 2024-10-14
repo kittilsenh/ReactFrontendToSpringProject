@@ -1,5 +1,3 @@
-// src/PaymentForm.js
-
 import React, { useState } from 'react';
 import {
     CardElement,
@@ -107,8 +105,25 @@ const PaymentForm = () => {
 
             if (error) {
                 setErrorMessage(error.message);
+                // Send payment failure status to the backend
+                await fetch('/api/payment/update-payment-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        status: 'Fail',
+                    }),
+                });
             } else if (paymentIntent && paymentIntent.status === 'succeeded') {
-                // Redirect to success page
+                // Send payment success status to the backend
+                await fetch('/api/payment/update-payment-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: email,
+                        status: 'Success',
+                    }),
+                });
                 navigate('/success');
             } else {
                 setErrorMessage('Payment failed. Please try again.');
@@ -119,6 +134,10 @@ const PaymentForm = () => {
             setIsProcessing(false);
         }
     };
+
+
+
+
 
     return (
         <Container maxWidth="sm">
